@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="records-container">
+    <div class="header-action">
+        <div class="title-group">
+            <h2>Patient <span class="text-accent">Registry</span></h2>
+            <p class="subtitle">Secure Medical Database Access</p>
+        </div>
+        <button class="btn-primary" onclick="secureOpenRegistration()">
+            <span class="icon">+</span> Register New Patient
+        </button>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Access Level</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>
+                        <div class="patient-name-cell">
+                            <div class="avatar-circle">{{ patient.name[0] }}</div>
+                            <strong>{{ patient.name }}</strong>
+                        </div>
+                    </td>
+                    <td><span class="lock-tag">Restricted</span></td>
+                    <td>
+                        <button class="btn-view" onclick="unlockPatient('{{ patient.id }}', '{{ patient.name }}')">
+                            🔒 View Private Records
+                        </button>
+                        
+                        <div id="details-{{ patient.id }}" class="patient-details-box" style="display: none;">
+                            <div class="details-grid">
+                                <p><strong>Age:</strong> {{ patient.age }}</p>
+                                <p><strong>Blood Group:</strong> {{ patient.blood_group }}</p>
+                                <p><strong>Condition:</strong> {{ patient.condition }}</p>
+                                <p><strong>Attending Doctor:</strong> Dr. {{ patient.doctor }}</p>
+                                <p><strong>Current Status:</strong> 
+                                    <span class="badge {{ patient.status.lower() }}">{{ patient.status }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="patientModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Register New Patient</h3>
+            <button class="close-x" onclick="closeModal('patientModal')">&times;</button>
+        </div>
+        
+        <form action="/add_patient" method="POST" class="secure-form">
+            <div class="form-row">
+                <input type="text" name="name" placeholder="Patient Full Name" required>
+                <input type="number" name="age" placeholder="Age" required>
+            </div>
+            
+            <input type="text" name="blood_group" placeholder="Blood Group (e.g. O+)">
+            
+            <textarea name="condition" placeholder="Clinical Condition / Diagnosis" rows="3"></textarea>
+            
+            <div class="form-row">
+                <select name="doctor" required>
+                    <option value="">-- Assign Doctor --</option>
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.name }}">{{ doctor.name }}</option>
+                    {% endfor %}
+                </select>
+                
+                <select name="status">
+                    <option value="Active">Active</option>
+                    <option value="Discharged">Discharged</option>
+                </select>
+            </div>
+            
+            <div class="date-group">
+                <label>Admission Date</label>
+                <input type="date" name="admission_date">
+            </div>
+
+            <div class="form-btns">
+                <button type="button" class="btn-cancel" onclick="closeModal('patientModal')">Cancel</button>
+                <button type="submit" class="btn-submit">Commit to Database</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // SECURE REGISTRATION GATEKEEPER
+    function secureOpenRegistration() {
+        const password = prompt("ADMIN AUTHENTICATION REQUIRED\nEnter password to access registration form:");
+        
+        if (password === 'admin123') {
+            openModal('patientModal');
+        } else if (password !== null) {
+            alert("Unauthorized. Access Denied.");
+        }
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    // SECURE VIEWING GATEKEEPER
+    function unlockPatient(id, name) {
+        const password = prompt(`CONFIDENTIALITY CHECK\nEnter password to view records for ${name}:`);
+        
+        if (password === 'admin123') {
+            const detailBox = document.getElementById(`details-${id}`);
+            const isHidden = detailBox.style.display === "none";
+            
+            detailBox.style.display = isHidden ? "block" : "none";
+            event.target.innerHTML = isHidden ? "🔓 Hide Details" : "🔒 View Private Records";
+            
+            if(isHidden) {
+                detailBox.style.animation = "slideDown 0.3s ease-out";
+            }
+        } else if (password !== null) {
+            alert("Incorrect password. Access denied.");
+        }
+    }
+</script>
+
+<style>
+    :root {
+        --accent: #3498db;
+        --dark: #2c3e50;
+        --light-bg: #f8f9fa;
+        --border: #dfe6e9;
+    }
+
+    .records-container { padding: 40px 8%; background: white; min-height: 80vh; }
+
+    /* Header Styling */
+    .header-action { 
+        display: flex; justify-content: space-between; align-items: center; 
+        margin-bottom: 30px; border-bottom: 2px solid var(--light-bg); padding-bottom: 20px;
+    }
+    .text-accent { color: var(--accent); }
+    .subtitle { color: #7f8c8d; font-size: 0.9rem; }
+
+    /* Table Design */
+    .table-wrapper { border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+    .data-table { width: 100%; border-collapse: collapse; background: white; }
+    .data-table th { background: var(--dark); color: white; padding: 15px; text-align: left; }
+    .data-table td { padding: 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+    .patient-name-cell { display: flex; align-items: center; gap: 12px; }
+    .avatar-circle { 
+        width: 35px; height: 35px; background: var(--accent); color: white; 
+        border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
+    }
+
+    .lock-tag { font-size: 0.7rem; background: #eee; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; color: #666; }
+
+    /* Detail Box Design */
+    .patient-details-box {
+        background: #fdfdfd; padding: 20px; margin-top: 15px;
+        border-radius: 10px; border: 1px solid var(--accent);
+        box-shadow: inset 0 0 10px rgba(52, 152, 219, 0.05);
+    }
+    .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .details-grid p { margin: 5px 0; color: #444; font-size: 0.9rem; }
+
+    /* Modal Styling */
+    .modal { 
+        display: none; position: fixed; z-index: 2000; left: 0; top: 0; 
+        width: 100%; height: 100%; background: rgba(44, 62, 80, 0.8); 
+        justify-content: center; align-items: center; backdrop-filter: blur(4px);
+    }
+    .modal-content { 
+        background: white; padding: 30px; border-radius: 15px; 
+        width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .close-x { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; }
+
+    /* Form Elements */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .secure-form input, .secure-form select, .secure-form textarea {
+        width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd;
+        border-radius: 8px; font-family: inherit; font-size: 0.95rem;
+    }
+    .date-group { margin: 10px 0; }
+    .date-group label { display: block; font-size: 0.8rem; color: #7f8c8d; }
+
+    /* Buttons */
+    .btn-primary { background: var(--dark); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    .btn-primary:hover { background: var(--accent); }
+    
+    .btn-view { background: white; border: 1px solid var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .btn-view:hover { background: var(--accent); color: white; }
+
+    .btn-submit { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn-cancel { background: #eee; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PASTE THE MEDIA QUERIES HERE */
+    @media screen and (max-width: 960px) {
+        .records-container { padding: 20px 4%; }
+        .header-action { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .btn-primary { width: 100%; }
+    }
+
+    @media screen and (max-width: 600px) {
+        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .data-table { min-width: 500px; }
+        .details-grid { grid-template-columns: 1fr; gap: 5px; }
+        .modal-content { width: 95%; padding: 20px; margin: 10px; }
+        .form-row { grid-template-columns: 1fr; gap: 0; }
+        .form-btns { display: flex; flex-direction: column; gap: 10px; }
+        .btn-submit, .btn-cancel { width: 100%; }
+    }
+</style>
+{% endblock %}

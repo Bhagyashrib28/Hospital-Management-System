@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="hero-full">
+        <div class="hero-overlay">
+            <div class="hero-content">
+                <div class="live-badge">● LIVE PORTAL ACTIVE</div>
+                <h1>Caring for Life's Most Precious Moments</h1>
+                <p>Access world-class healthcare with City Hospital. Use our AI assistant for instant symptom analysis or book an appointment with our specialists.</p>
+                
+                <div class="hero-stats">
+                    <div class="h-stat">
+                        <span class="h-num">{{ patients|length if patients else '240' }}+</span>
+                        <span class="h-label">Recovered Patients</span>
+                    </div>
+                    <div class="h-stat">
+                        <span class="h-num">{{ doctors|length if doctors else '18' }}</span>
+                        <span class="h-label">Specialists On-Duty</span>
+                    </div>
+                </div>
+
+                <div class="hero-btns">
+                    <a href="/chatbot" class="btn-hero-primary">Talk to AI Assistant</a>
+                    <a href="/doctors" class="btn-hero-secondary">View Specialists</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-ticker">
+        <div class="ticker-item"><strong>ER Status:</strong> <span class="text-green">Normal Flow</span></div>
+        <div class="ticker-item"><strong>Pharmacy:</strong> Open 24/7</div>
+        <div class="ticker-item"><strong>Blood Bank:</strong> O+, A- Required</div>
+        <div class="ticker-item"><strong>Next Health Seminar:</strong> Monday 10:00 AM</div>
+    </div>
+
+    <section class="services-section">
+        <h2 class="section-title">Center of Excellence</h2>
+        <div class="service-grid">
+            <div class="service-card">
+                <div class="s-icon">❤️</div>
+                <h3>Cardiology</h3>
+                <p>Advanced rhythmic heart monitoring and surgical care.</p>
+            </div>
+            <div class="service-card">
+                <div class="s-icon">🧠</div>
+                <h3>Neurology</h3>
+                <p>Brain and nervous system diagnostic precision.</p>
+            </div>
+            <div class="service-card">
+                <div class="s-icon">🦴</div>
+                <h3>Orthopedics</h3>
+                <p>Bone density analysis and joint reconstruction.</p>
+            </div>
+            <div class="service-card">
+                <div class="s-icon">🧪</div>
+                <h3>Diagnostics</h3>
+                <p>High-precision laboratory and imaging services.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="emergency-footer">
+        <div class="emergency-wrap">
+            <div class="emergency-info">
+                <span class="alert-icon">🚨</span>
+                <div class="emergency-text">
+                    <p class="emergency-label">24/7 MEDICAL EMERGENCY LINE</p>
+                    <h2 class="emergency-number">+91 123-456-7890</h2>
+                </div>
+            </div>
+            <div class="emergency-actions">
+                <a href="tel:+911234567890" class="btn-emergency-call">Call Ambulance Now</a>
+                <p class="location-text">📍 Main Street, City Center Hospital Plaza</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<style>
+    /* ... (Include your existing CSS here) ... */
+    
+    :root {
+        --primary: #2c3e50;
+        --accent: #3498db;
+        --text-green: #2ecc71;
+        --emergency-red: #e74c3c; /* Added for the footer */
+    }
+
+    /* Your existing CSS for Hero, Ticker, and Services */
+    .container { max-width: 100% !important; padding: 0 !important; }
+    .hero-full { height: 80vh; background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover; }
+    .hero-overlay { background: linear-gradient(to right, rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.2)); height: 100%; display: flex; align-items: center; padding: 0 10%; }
+    .hero-content { max-width: 700px; text-align: left; color: white; }
+    .live-badge { display: inline-block; background: rgba(46, 204, 113, 0.2); color: var(--text-green); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 20px; border: 1px solid var(--text-green); }
+    .hero-content h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; font-weight: 800; }
+    .status-ticker { background: #f8f9fa; padding: 15px 0; display: flex; justify-content: center; gap: 40px; border-bottom: 1px solid #ddd; font-size: 0.9rem; color: #555; }
+    .text-green { color: var(--text-green); font-weight: bold; }
+    .services-section { padding: 80px 10%; background: white; text-align: center; }
+    .section-title { font-size: 2.5rem; margin-bottom: 50px; color: var(--primary); font-weight: 700; }
+    .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; }
+    .service-card { padding: 40px 20px; border-radius: 15px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.3s; border-bottom: 4px solid transparent; }
+    .service-card:hover { transform: translateY(-10px); border-color: var(--accent); }
+    .s-icon { font-size: 3rem; margin-bottom: 20px; }
+    .service-card h3 { margin-bottom: 15px; color: var(--primary); }
+    .service-card p { color: #777; font-size: 0.95rem; line-height: 1.5; }
+    .btn-hero-primary { background: var(--accent); color: white; padding: 16px 40px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; margin-right: 15px; }
+    .btn-hero-secondary { background: transparent; color: white; padding: 14px 40px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; border: 2px solid white; }
+
+    /* NEW: EMERGENCY FOOTER STYLES */
+    .emergency-footer {
+        background: #1a252f; /* Dark sleek background */
+        color: white;
+        padding: 50px 10%;
+        border-top: 5px solid var(--emergency-red);
+    }
+
+    .emergency-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .emergency-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .alert-icon {
+        font-size: 3rem;
+        animation: pulse 2s infinite;
+    }
+
+    .emergency-label {
+        color: var(--emergency-red);
+        font-weight: 800;
+        letter-spacing: 2px;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .emergency-number {
+        font-size: 2.5rem;
+        margin: 0;
+        font-weight: 800;
+    }
+
+    .btn-emergency-call {
+        background: var(--emergency-red);
+        color: white;
+        padding: 15px 35px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        display: inline-block;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-emergency-call:hover {
+        transform: scale(1.05);
+        background: #c0392b;
+    }
+
+    .location-text {
+        margin-top: 15px;
+        color: #bdc3c7;
+        font-size: 0.9rem;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .emergency-wrap { text-align: center; justify-content: center; }
+        .emergency-info { flex-direction: column; }
+    }
+</style>
+{% endblock %}

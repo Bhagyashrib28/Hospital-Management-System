@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="booking-container">
+    <div class="booking-card">
+        <div class="booking-header">
+            <div class="icon-wrap">📅</div>
+            <h2>Schedule <span class="text-accent">Consultation</span></h2>
+            <p>Submit your request. Our team will email you once the slot is confirmed.</p>
+        </div>
+
+        <form id="appointmentForm" class="booking-form" onsubmit="handleBooking(event)">
+            <div class="form-section">
+                <label>Patient Information</label>
+                <div class="input-row">
+                    <input type="text" name="name" placeholder="Full Name" required>
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <label>Appointment Details</label>
+                <div class="input-row">
+                    <select name="department" required>
+                        <option value="">Select Department</option>
+                        <option>Cardiology</option>
+                        <option>Neurology</option>
+                        <option>General Medicine</option>
+                        <option>Pediatrics</option>
+                    </select>
+                    <input type="date" name="date" required>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <label>Additional Notes (Optional)</label>
+                <textarea name="notes" placeholder="Briefly describe the reason for your visit..." rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-booking">
+                Request Appointment
+            </button>
+        </form>
+
+        <div id="successMessage" class="success-overlay" style="display: none;">
+            <div class="success-content">
+                <div class="check-circle">✓</div>
+                <h3>Request Received!</h3>
+                <p>
+                    We have logged your request. <strong>We will send an email</strong> 
+                     shortly to confirm your booking status.
+                </p>
+                <button class="btn-primary-alt" onclick="window.location.href='/'">Return Home</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --accent: #3498db;
+        --dark: #1e272e;
+        --bg: #f5f6fa;
+        --success: #2ecc71;
+        --border: #f1f2f6;
+    }
+
+    .booking-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 20px;
+        min-height: 85vh;
+        background-color: var(--bg);
+    }
+
+    .booking-card {
+        background: white;
+        padding: 40px;
+        border-radius: 24px;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .booking-header { text-align: center; margin-bottom: 30px; }
+    .icon-wrap { font-size: 2.5rem; margin-bottom: 10px; }
+    .booking-header h2 { font-size: 1.8rem; color: var(--dark); margin-bottom: 8px; }
+    .text-accent { color: var(--accent); }
+    .booking-header p { color: #7f8c8d; font-size: 0.95rem; line-height: 1.5; }
+
+    .form-section { margin-bottom: 20px; }
+    .form-section label { 
+        display: block; 
+        font-weight: 700; 
+        font-size: 0.75rem; 
+        text-transform: uppercase; 
+        color: #95a5a6; 
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    .booking-form input, .booking-form select, .booking-form textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: #fdfdfd;
+    }
+
+    .booking-form input:focus, .booking-form select:focus, .booking-form textarea:focus {
+        border-color: var(--accent);
+        outline: none;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+    }
+
+    .btn-submit-booking {
+        width: 100%;
+        background: var(--dark);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .btn-submit-booking:hover {
+        background: var(--accent);
+        transform: translateY(-2px);
+    }
+
+    /* SUCCESS STATE */
+    .success-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        z-index: 10;
+        animation: fadeIn 0.5s ease forwards;
+    }
+
+    .success-content { padding: 40px; }
+    .check-circle {
+        width: 80px; height: 80px;
+        background: var(--success);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 25px;
+        box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
+    }
+
+    .btn-primary-alt {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+        .input-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<script>
+    async function handleBooking(event) {
+        event.preventDefault();
+        
+        const form = document.getElementById('appointmentForm');
+        const successBox = document.getElementById('successMessage');
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch('/book_appointment', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                // Animate out the form
+                form.style.transition = "opacity 0.4s ease";
+                form.style.opacity = "0";
+                
+                setTimeout(() => {
+                    form.style.display = "none";
+                    successBox.style.display = "flex";
+                }, 400);
+            } else {
+                alert("Error: " + (data.message || "Could not process booking."));
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            alert("Server connection failed. Please try again later.");
+        }
+    }
+</script>
+{% endblock %}
